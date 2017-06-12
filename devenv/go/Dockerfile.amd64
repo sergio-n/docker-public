@@ -1,0 +1,21 @@
+FROM sergeinipub.azurecr.io/devenv/base-shell:amd64-latest
+MAINTAINER "Sergei Nikitin" <nikitin.sergio@gmail.com>
+
+ENV GOLANG_VERSION=1.8.2
+ENV GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA256=5477d6c9a4f96fa120847fafa88319d7b56b5d5068e41c3587eebe248b939be7
+
+ENV GOPATH=$HOME/tools/go
+ENV GOROOT=/usr/local/go
+
+RUN mkdir -p $GOPATH
+
+RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o $GOPATH/golang.tar.gz \
+    && echo "$GOLANG_DOWNLOAD_SHA256 $GOPATH/golang.tar.gz" | sha256sum -c -
+RUN sudo tar -xzf $GOPATH/golang.tar.gz -C /usr/local 
+
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Export variables to be accessible in ssh session
+RUN sudo bash -c 'echo "export GOPATH=${HOME}/tools/go" >> /etc/profile'
+RUN sudo bash -c 'echo "export PATH=${GOPATH}/bin:/usr/local/go/bin:${PATH}" >> /etc/profile'

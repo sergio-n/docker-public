@@ -1,0 +1,6 @@
+#
+# Image level configuration
+#
+
+export DOCKER_REPO=base-shell
+export DOCKER_IMAGE_NAME=${DOCKER_REGISTRY}/${DOCKER_ORG}/${DOCKER_REPO}

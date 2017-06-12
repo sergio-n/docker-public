@@ -1,0 +1,40 @@
+FROM sergeinipub.azurecr.io/devenv/go-shell:amd64-latest
+MAINTAINER "Sergei Nikitin" <nikitin.sergio@gmail.com>
+
+# SSH Shell
+# https://docs.docker.com/engine/examples/running_ssh_service/#run-a-test_sshd-container
+RUN sudo apt-get update && \ 
+    sudo apt-get install -y --no-install-recommends \
+    openssh-server
+
+RUN sudo mkdir /var/run/sshd
+RUN sudo bash -c "echo 'cloud:empty' | chpasswd"
+# RUN sed -i "s/PermitRootLogin prohibit-password/PermitRootLogin yes/" /etc/ssh/sshd_config
+
+# sshd
+EXPOSE 22022
+
+# saving varibables to the common profile, so they will be available in ssh session
+RUN sudo bash -c 'echo "export VISIBLE=now" >> /etc/profile'
+
+#
+# Setup Gogland
+#
+
+# install required xserver dependecies
+RUN sudo apt-get install -qqy libfontconfig1 libxrender1 libxtst6 libxi6 libgconf-2-4
+
+ENV PROD_VERSION=171.4424.55
+ENV PROD_DIR=gogland
+ENV PROD_ARCHIVE=gogland-$PROD_VERSION.tar.gz
+ENV PROD_DOWNLOAD_URL=https://download.jetbrains.com/go/$PROD_ARCHIVE
+
+RUN mkdir -p $PROD_DIR
+
+RUN curl -fsOSL $PROD_DOWNLOAD_URL -o $PROD_DIR/$PROD_ARCHIVE
+RUN tar -C $PROD_DIR -xzf $PROD_ARCHIVE --strip-components=1
+RUN rm $PROD_ARCHIVE
+
+ADD entrypoint.sh entrypoint.sh
+ENTRYPOINT [ "bash" ]
+CMD ["entrypoint.sh"]

@@ -1,0 +1,8 @@
+#
+# Root level configuration (Globals and registry)
+#
+
+export DOCKER_REGISTRY=sergeinipub.azurecr.io
+export DOCKER_ORG=devenv
+
+export PUBLISH_VERSION=0.0.1
